@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>My Android TV</title>
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        video { width: 100vw !important; height: 100vh !important; }
+        /* চ্যানেল নম্বর স্ক্রিনে দেখানোর জন্য */
+        #channel-badge {
+            position: absolute; top: 30px; right: 30px; color: #fff;
+            background: rgba(0, 0, 0, 0.7); padding: 10px 20px; 
+            font-family: Arial, sans-serif; font-size: 24px; font-weight: bold;
+            z-index: 10; border-radius: 8px; display: none;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="channel-badge">চ্যানেল: <span id="ch-number">0</span></div>
+
+    <video id="my-video" class="video-js vjs-default-skin" controls autoplay preload="auto">
+        <source id="source" src="https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/index.m3u8" type="application/x-mpegURL">
+    </video>
+
+    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+    <script>
+        var player = videojs('my-video');
+        
+        // আপনার দেওয়া ৯টি লিংক (০ থেকে ৮ নম্বর সিরিয়াল)
+        var channels = [
+            "https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/index.m3u8", // ০ নম্বর চ্যানেল
+            "https://owrcovcrpy.gpcdn.net/bpk-tv/1723/output/index.m3u8", // ১ নম্বর চ্যানেল
+            "https://live-bangla.akamaized.net/liveabr/pub-iobanglakp3sff/live_720p/chunks.m3u8", // ২ নম্বর চ্যানেল
+            "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI/amarbanglatv.stream/playlist.m3u8", // ৩ নম্বর চ্যানেল
+            "http://198.195.239.50:8095/Tsports/tracks-v1a1/mono.m3u8", // ৪ নম্বর চ্যানেল
+            "http://103.159.180.34:5001/live/3476.m3u8", // ৫ নম্বর চ্যানেল
+            "https://deshitv.deshitv24.net/live/myStream/playlist.m3u8", // ৬ নম্বর চ্যানেল
+            "https://mumt05.tangotv.in/RUPASIBANGLA/index.m3u8", // ৭ নম্বর চ্যানেল
+            "https://live-stream.utkalbongo.com/hls/livebanglatvstream.m3u8" // ৮ নম্বর চ্যানেল
+        ];
+        
+        var current = 0;
+
+        // স্ক্রিনে চ্যানেল নম্বর দেখানোর ফাংশন
+        function showChannelNumber(num) {
+            var badge = document.getElementById('channel-badge');
+            document.getElementById('ch-number').innerText = num;
+            badge.style.display = 'block';
+            
+            // ৩ সেকেন্ড পর নম্বরটি নিজে থেকেই লুকিয়ে যাবে
+            clearTimeout(window.badgeTimeout);
+            window.badgeTimeout = setTimeout(() => { 
+                badge.style.display = 'none'; 
+            }, 3000);
+        }
+
+        // চ্যানেল পরিবর্তন করার মূল ফাংশন
+        function playChannel(index) {
+            if (index >= 0 && index < channels.length) {
+                current = index;
+                player.src({ src: channels[current], type: 'application/x-mpegURL' });
+                player.play();
+                showChannelNumber(current);
+            }
+        }
+
+        // রিমোট কন্ট্রোল বাটন লিসেনার
+        window.addEventListener('keydown', function(e) {
+            // ১. রিমোটের Up/Down বাটন দিয়ে এক এক করে চ্যানেল বদলানো
+            if (e.keyCode == 38) { // Up Arrow
+                let next = current + 1;
+                if(next >= channels.length) next = 0; // শেষ চ্যানেল পার হলে আবার ০ তে যাবে
+                playChannel(next);
+            } 
+            else if (e.keyCode == 40) { // Down Arrow
+                let prev = current - 1;
+                if(prev < 0) prev = channels.length - 1; // ০ এর নিচে নামলে শেষ চ্যানেলে যাবে
+                playChannel(prev);
+            }
+            
+            // ২. রিমোটের নাম্বার বাটন (0 থেকে 9) চেপে সরাসরি জাম্প করা
+            // কি-কোড ৪৮ থেকে ৫৭ হলো যথাক্রমে নাম্বার ০ থেকে ৯
+            else if (e.keyCode >= 48 && e.keyCode <= 57) {
+                let targetChannel = e.keyCode - 48; // কি-কোড থেকে আসল নাম্বার বের করা
+                playChannel(targetChannel);
+            }
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>My Android TV</title>
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        video { width: 100vw !important; height: 100vh !important; }
+        /* চ্যানেল নম্বর স্ক্রিনে দেখানোর জন্য */
+        #channel-badge {
+            position: absolute; top: 30px; right: 30px; color: #fff;
+            background: rgba(0, 0, 0, 0.7); padding: 10px 20px; 
+            font-family: Arial, sans-serif; font-size: 24px; font-weight: bold;
+            z-index: 10; border-radius: 8px; display: none;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="channel-badge">চ্যানেল: <span id="ch-number">0</span></div>
+
+    <video id="my-video" class="video-js vjs-default-skin" controls autoplay preload="auto">
+        <source id="source" src="https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/index.m3u8" type="application/x-mpegURL">
+    </video>
+
+    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+    <script>
+        var player = videojs('my-video');
+        
+        // আপনার দেওয়া ৯টি লিংক (০ থেকে ৮ নম্বর সিরিয়াল)
+        var channels = [
+            "https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/index.m3u8", // ০ নম্বর চ্যানেল
+            "https://owrcovcrpy.gpcdn.net/bpk-tv/1723/output/index.m3u8", // ১ নম্বর চ্যানেল
+            "https://live-bangla.akamaized.net/liveabr/pub-iobanglakp3sff/live_720p/chunks.m3u8", // ২ নম্বর চ্যানেল
+            "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI/amarbanglatv.stream/playlist.m3u8", // ৩ নম্বর চ্যানেল
+            "http://198.195.239.50:8095/Tsports/tracks-v1a1/mono.m3u8", // ৪ নম্বর চ্যানেল
+            "http://103.159.180.34:5001/live/3476.m3u8", // ৫ নম্বর চ্যানেল
+            "https://deshitv.deshitv24.net/live/myStream/playlist.m3u8", // ৬ নম্বর চ্যানেল
+            "https://mumt05.tangotv.in/RUPASIBANGLA/index.m3u8", // ৭ নম্বর চ্যানেল
+            "https://live-stream.utkalbongo.com/hls/livebanglatvstream.m3u8" // ৮ নম্বর চ্যানেল
+        ];
+        
+        var current = 0;
+
+        // স্ক্রিনে চ্যানেল নম্বর দেখানোর ফাংশন
+        function showChannelNumber(num) {
+            var badge = document.getElementById('channel-badge');
+            document.getElementById('ch-number').innerText = num;
+            badge.style.display = 'block';
+            
+            // ৩ সেকেন্ড পর নম্বরটি নিজে থেকেই লুকিয়ে যাবে
+            clearTimeout(window.badgeTimeout);
+            window.badgeTimeout = setTimeout(() => { 
+                badge.style.display = 'none'; 
+            }, 3000);
+        }
+
+        // চ্যানেল পরিবর্তন করার মূল ফাংশন
+        function playChannel(index) {
+            if (index >= 0 && index < channels.length) {
+                current = index;
+                player.src({ src: channels[current], type: 'application/x-mpegURL' });
+                player.play();
+                showChannelNumber(current);
+            }
+        }
+
+        // রিমোট কন্ট্রোল বাটন লিসেনার
+        window.addEventListener('keydown', function(e) {
+            // ১. রিমোটের Up/Down বাটন দিয়ে এক এক করে চ্যানেল বদলানো
+            if (e.keyCode == 38) { // Up Arrow
+                let next = current + 1;
+                if(next >= channels.length) next = 0; // শেষ চ্যানেল পার হলে আবার ০ তে যাবে
+                playChannel(next);
+            } 
+            else if (e.keyCode == 40) { // Down Arrow
+                let prev = current - 1;
+                if(prev < 0) prev = channels.length - 1; // ০ এর নিচে নামলে শেষ চ্যানেলে যাবে
+                playChannel(prev);
+            }
+            
+            // ২. রিমোটের নাম্বার বাটন (0 থেকে 9) চেপে সরাসরি জাম্প করা
+            // কি-কোড ৪৮ থেকে ৫৭ হলো যথাক্রমে নাম্বার ০ থেকে ৯
+            else if (e.keyCode >= 48 && e.keyCode <= 57) {
+                let targetChannel = e.keyCode - 48; // কি-কোড থেকে আসল নাম্বার বের করা
+                playChannel(targetChannel);
+            }
+        });
+    </script>
+</body>
+</html>
